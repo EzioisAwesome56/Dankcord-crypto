@@ -4,7 +4,9 @@ import com.sun.org.apache.xml.internal.security.utils.Base64;
 
 import javax.crypto.Cipher;
 import java.security.KeyFactory;
+import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public class crypto {
@@ -25,7 +27,19 @@ public class crypto {
             // encrypt mode
             try {
                 // first we need to get the private key
-                
+                PrivateKey key = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(Base64.decode(args[2])));
+                // setup the cipher
+                Cipher ci = Cipher.getInstance("RSA");
+                ci.init(Cipher.ENCRYPT_MODE, key);
+                // un-base64 text
+                String source = new String(Base64.decode(args[1]));
+                // encrypt it
+                String output = Base64.encode(ci.doFinal(source.getBytes()));
+                // shit it out stdout
+                System.out.print(output);
+            } catch (Exception e){
+                e.printStackTrace();
+                System.exit(-1);
             }
         } else {
             // decrypt mode
